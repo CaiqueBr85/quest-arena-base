@@ -15,10 +15,12 @@ import 'package:quest_arena_client/providers/game_providers.dart';
 import 'package:quest_arena_client/game/quest_arena_game.dart';
 import '../ui/top_bar_overlay.dart';
 import '../ui/dpad_overlay.dart';
-
 import '../ui/side_panel_overlay.dart';
 import '../ui/npc_dialogue_overlay.dart';
+
+import '../ui/room_header_overlay.dart';
 import '../ui/item_toast_overlay.dart';
+import '../models/game_models.dart';
 
 class QuestArenaWidget extends ConsumerStatefulWidget {
   const QuestArenaWidget({super.key});
@@ -55,10 +57,19 @@ class _QuestArenaWidgetState extends ConsumerState<QuestArenaWidget> {
   @override
   Widget build(BuildContext context) {
     final snapshot = ref.watch(gameSnapshotProvider);
-    // ignore: unused_local_variable
     final npcDialogue = ref.watch(npcDialogueProvider);
-    // ignore: unused_local_variable
     final itemEffect = ref.watch(itemEffectProvider);
+    final currentRoom = ref.watch(currentRoomProvider);
+    final inRoom = currentRoom != null;
+
+    // Handle room world swapping
+    ref.listen<TreasureRoomData?>(currentRoomProvider, (previous, next) {
+      if (next != null) {
+        _game.enterRoom(next);
+      } else {
+        _game.exitRoom();
+      }
+    });
 
     // Auto-dismiss item effect
     ref.listen<Object?>(itemEffectProvider, (previous, next) {
@@ -90,29 +101,36 @@ class _QuestArenaWidgetState extends ConsumerState<QuestArenaWidget> {
       backgroundColor: const Color(0xFF0A0A1A),
       body: Stack(
         children: [
-          // 1. Core Flame Game Layer (Takes up the whole screen space initially)
+          // 1. Core Flame Game Layer
           Positioned.fill(child: GameWidget<QuestArenaGame>(game: _game)),
 
-          // 2. Overlays Layer (Commented out until Tasks 8-12 are done)
-          const Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(child: TopBarOverlay()),
-          ),
+          // 2. HUD Layers (Conditional)
+          if (!inRoom) ...[
+            const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SafeArea(bottom: false, child: TopBarOverlay()),
+            ),
+            const Positioned(
+              top: 80,
+              right: 16,
+              bottom: 16,
+              child: SafeArea(child: SidePanelOverlay()),
+            ),
+          ] else
+            const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: RoomHeaderOverlay(),
+            ),
 
           const Positioned(
             bottom: 32,
             left: 0,
             right: 0,
             child: SafeArea(child: DPadOverlay()),
-          ),
-
-          const Positioned(
-            top: 80,
-            right: 16,
-            bottom: 16,
-            child: SafeArea(child: SidePanelOverlay()),
           ),
 
           // 3. Conditional Overlays

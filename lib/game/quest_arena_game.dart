@@ -7,13 +7,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/game_providers.dart';
 import 'quest_world.dart';
+import 'room_world.dart';
+import '../models/game_models.dart';
 
-class QuestArenaGame extends FlameGame<QuestWorld> with KeyboardEvents {
+class QuestArenaGame extends FlameGame with KeyboardEvents {
   final WidgetRef ref;
 
   static const double tileSize = 32.0;
 
-  QuestArenaGame(this.ref) : super(world: QuestWorld(ref));
+  late final QuestWorld questWorld;
+  late final RoomWorld roomWorld;
+
+  QuestArenaGame(this.ref) : super() {
+    questWorld = QuestWorld(ref);
+    world = questWorld;
+    roomWorld = RoomWorld(ref);
+  }
 
   @override
   Color backgroundColor() => const Color(0xFF0A0A1A);
@@ -24,6 +33,18 @@ class QuestArenaGame extends FlameGame<QuestWorld> with KeyboardEvents {
 
     // Setup camera viewfinder
     camera.viewfinder.anchor = Anchor.center;
+  }
+
+  void enterRoom(TreasureRoomData room) {
+    if (world == roomWorld) return;
+    world = roomWorld;
+    roomWorld.loadRoom(room);
+  }
+
+  void exitRoom() {
+    if (world == questWorld) return;
+    world = questWorld;
+    roomWorld.unloadRoom();
   }
 
   @override
@@ -58,13 +79,13 @@ class QuestArenaGame extends FlameGame<QuestWorld> with KeyboardEvents {
 
       // Interaction
       if (keysPressed.contains(LogicalKeyboardKey.keyE)) {
-        world.handleInteract();
+        questWorld.handleInteract();
         return KeyEventResult.handled;
       }
 
       // Items
       if (keysPressed.contains(LogicalKeyboardKey.keyI)) {
-        world.handleUseItem();
+        questWorld.handleUseItem();
         return KeyEventResult.handled;
       }
     }

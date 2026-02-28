@@ -54,10 +54,11 @@ class _NpcDialogueOverlayState extends ConsumerState<NpcDialogueOverlay>
 
   @override
   Widget build(BuildContext context) {
+    final color = _getNpcColor(widget.dialogue.npcType);
+    final icon = _getNpcIcon(widget.dialogue.npcType);
+
     return GestureDetector(
-      onTap: () {
-        // Close on tap background if desired, but requirements say "CLOSE" button
-      },
+      onTap: () => ref.read(npcDialogueProvider.notifier).clear(),
       child: Container(
         color: Colors.black54,
         child: Center(
@@ -68,13 +69,10 @@ class _NpcDialogueOverlayState extends ConsumerState<NpcDialogueOverlay>
             decoration: BoxDecoration(
               color: const Color(0xFF16213E),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: const Color(0xFFFF6600).withOpacity(0.5),
-                width: 2,
-              ),
+              border: Border.all(color: color.withOpacity(0.5), width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFFF6600).withOpacity(0.2),
+                  color: color.withOpacity(0.2),
                   blurRadius: 20,
                   spreadRadius: 5,
                 ),
@@ -90,20 +88,16 @@ class _NpcDialogueOverlayState extends ConsumerState<NpcDialogueOverlay>
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFF6600).withOpacity(0.2),
+                        color: color.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.face_retouching_natural,
-                        color: Color(0xFFFF6600),
-                        size: 20,
-                      ),
+                      child: Icon(icon, color: color, size: 20),
                     ),
                     const SizedBox(width: 12),
                     Text(
                       widget.dialogue.npcType.toUpperCase(),
-                      style: const TextStyle(
-                        color: Color(0xFFFF6600),
+                      style: TextStyle(
+                        color: color,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                         letterSpacing: 1.5,
@@ -138,31 +132,37 @@ class _NpcDialogueOverlayState extends ConsumerState<NpcDialogueOverlay>
                 const SizedBox(height: 32),
 
                 // Actions
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: TextButton(
-                    onPressed: () {
-                      ref.read(npcDialogueProvider.notifier).clear();
-                    },
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'tap anywhere to close',
+                      style: TextStyle(color: Colors.white24, fontSize: 10),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        ref.read(npcDialogueProvider.notifier).clear();
+                      },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        backgroundColor: color.withOpacity(0.1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(color: color),
+                        ),
                       ),
-                      backgroundColor: const Color(0xFFFF6600).withOpacity(0.1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: const BorderSide(color: Color(0xFFFF6600)),
+                      child: Text(
+                        'CLOSE [X]',
+                        style: TextStyle(
+                          color: color,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    child: const Text(
-                      'CLOSE [X]',
-                      style: TextStyle(
-                        color: Color(0xFFFF6600),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -170,6 +170,18 @@ class _NpcDialogueOverlayState extends ConsumerState<NpcDialogueOverlay>
         ),
       ),
     );
+  }
+
+  Color _getNpcColor(String type) {
+    if (type.contains('guard')) return Colors.blueAccent;
+    if (type.contains('hunter')) return Colors.redAccent;
+    return const Color(0xFFFF6600);
+  }
+
+  IconData _getNpcIcon(String type) {
+    if (type.contains('guard')) return Icons.shield;
+    if (type.contains('hunter')) return Icons.sports_martial_arts;
+    return Icons.face_retouching_natural;
   }
 }
 
