@@ -16,9 +16,9 @@ import 'package:quest_arena_client/game/quest_arena_game.dart';
 import '../ui/top_bar_overlay.dart';
 import '../ui/dpad_overlay.dart';
 
-// import 'overlays/side_panel_overlay.dart';
-// import 'overlays/npc_dialogue_overlay.dart';
-// import 'overlays/item_toast_overlay.dart';
+import '../ui/side_panel_overlay.dart';
+import '../ui/npc_dialogue_overlay.dart';
+import '../ui/item_toast_overlay.dart';
 
 class QuestArenaWidget extends ConsumerStatefulWidget {
   const QuestArenaWidget({super.key});
@@ -108,23 +108,17 @@ class _QuestArenaWidgetState extends ConsumerState<QuestArenaWidget> {
             child: SafeArea(child: DPadOverlay()),
           ),
 
-          /*
-
           const Positioned(
             top: 80,
             right: 16,
             bottom: 16,
             child: SafeArea(child: SidePanelOverlay()),
           ),
-          */
 
           // 3. Conditional Overlays
-          /*
           if (npcDialogue != null)
-            Positioned.fill(
-              child: NpcDialogueOverlay(dialogue: npcDialogue),
-            ),
-            
+            Positioned.fill(child: NpcDialogueOverlay(dialogue: npcDialogue)),
+
           if (itemEffect != null)
             Positioned(
               bottom: 120,
@@ -132,7 +126,6 @@ class _QuestArenaWidgetState extends ConsumerState<QuestArenaWidget> {
               right: 0,
               child: Center(child: ItemToastOverlay(effect: itemEffect)),
             ),
-          */
         ],
       ),
     );
