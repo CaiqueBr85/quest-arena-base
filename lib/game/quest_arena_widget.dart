@@ -13,7 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quest_arena_client/providers/game_providers.dart';
 import 'package:quest_arena_client/game/quest_arena_game.dart';
-// import 'overlays/top_bar_overlay.dart';
+import '../ui/top_bar_overlay.dart';
+
 // import 'overlays/dpad_overlay.dart';
 // import 'overlays/side_panel_overlay.dart';
 // import 'overlays/npc_dialogue_overlay.dart';
@@ -93,8 +94,6 @@ class _QuestArenaWidgetState extends ConsumerState<QuestArenaWidget> {
           Positioned.fill(child: GameWidget<QuestArenaGame>(game: _game)),
 
           // 2. Overlays Layer (Commented out until Tasks 8-12 are done)
-
-          /*
           const Positioned(
             top: 0,
             left: 0,
@@ -102,6 +101,7 @@ class _QuestArenaWidgetState extends ConsumerState<QuestArenaWidget> {
             child: SafeArea(child: TopBarOverlay()),
           ),
 
+          /*
           const Positioned(
             bottom: 32,
             left: 32,
