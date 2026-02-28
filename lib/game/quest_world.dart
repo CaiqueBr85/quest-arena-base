@@ -2,6 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/game_providers.dart';
+import 'components/npc_component.dart';
 import 'components/player_component.dart';
 import 'components/tile_map_component.dart';
 
@@ -10,6 +11,7 @@ class QuestWorld extends World {
 
   late TileMapComponent tileMap;
   final Map<String, PlayerComponent> _players = {};
+  final Map<String, NpcComponent> _npcs = {};
 
   QuestWorld(this.ref);
 
@@ -66,7 +68,36 @@ class QuestWorld extends World {
       }
     }
 
-    // 3. Camera Follow Logic
+    // 3. Sync NPCs
+    final serverNpcs = snapshot.npcs.keys.toSet();
+    final localNpcs = _npcs.keys.toSet();
+
+    // Remove despawned NPCs
+    final npcsToRemove = localNpcs.difference(serverNpcs);
+    for (final id in npcsToRemove) {
+      final comp = _npcs.remove(id);
+      if (comp != null) {
+        comp.removeFromParent();
+      }
+    }
+
+    // Add or update NPCs
+    for (final id in serverNpcs) {
+      final npcData = snapshot.npcs[id] as Map<String, dynamic>;
+
+      if (!_npcs.containsKey(id)) {
+        // Add new NPC
+        final newNpc = NpcComponent(npcId: id, data: npcData);
+
+        _npcs[id] = newNpc;
+        tileMap.add(newNpc);
+      } else {
+        // Update existing NPC
+        _npcs[id]!.updateFromData(npcData);
+      }
+    }
+
+    // 4. Camera Follow Logic
     final myPlayerComp = _players[teamName];
     if (myPlayerComp != null) {
       final cam = findGame()!.camera;
