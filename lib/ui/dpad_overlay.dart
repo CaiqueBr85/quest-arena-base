@@ -22,8 +22,7 @@ class DPadOverlay extends ConsumerWidget {
             },
           ),
 
-          const Spacer(),
-
+          const SizedBox(width: 48), // Padding equivalent to Spacer
           // Action Buttons
           Column(
             mainAxisSize: MainAxisSize.min,
@@ -45,7 +44,7 @@ class DPadOverlay extends ConsumerWidget {
           ),
 
           // Padding roughly leaving space for side panel overlay
-          const SizedBox(width: 280),
+          const SizedBox(width: 250),
         ],
       ),
     );

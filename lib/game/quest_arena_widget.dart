@@ -103,7 +103,8 @@ class _QuestArenaWidgetState extends ConsumerState<QuestArenaWidget> {
 
           const Positioned(
             bottom: 32,
-            left: 32,
+            left: 0,
+            right: 0,
             child: SafeArea(child: DPadOverlay()),
           ),
 
