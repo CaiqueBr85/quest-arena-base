@@ -78,7 +78,7 @@ class QuestWorld extends World {
         cam.viewfinder.position.x +
             (targetX - cam.viewfinder.position.x) * 0.15,
         cam.viewfinder.position.y +
-            (targetY - cam.viewfinder.position.y) * 0.15,
+            ((targetY - 160) - cam.viewfinder.position.y) * 0.15,
       );
     }
   }
