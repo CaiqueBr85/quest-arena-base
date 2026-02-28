@@ -89,12 +89,8 @@ class _QuestArenaWidgetState extends ConsumerState<QuestArenaWidget> {
       backgroundColor: const Color(0xFF0A0A1A),
       body: Stack(
         children: [
-          // 1. Core Flame Game Layer (takes up all available space but forces contents to center out)
-          Center(
-            child: SizedBox.expand(
-              child: GameWidget<QuestArenaGame>(game: _game),
-            ),
-          ),
+          // 1. Core Flame Game Layer (Takes up the whole screen space initially)
+          Positioned.fill(child: GameWidget<QuestArenaGame>(game: _game)),
 
           // 2. Overlays Layer (Commented out until Tasks 8-12 are done)
 

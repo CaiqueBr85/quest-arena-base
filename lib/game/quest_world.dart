@@ -74,19 +74,11 @@ class QuestWorld extends World {
       final targetX = myPlayerComp.position.x;
       final targetY = myPlayerComp.position.y;
 
-      // We clamp the camera center so we don't look past the map edges.
-      // E.g., assume viewport is ~600x600 in browser. 600/2 = 300 margin.
-      // Game size is 640x640. So clamp between 300 and 340.
-
-      final visibleMargin = 280.0;
-      final clampedX = targetX.clamp(visibleMargin, 640.0 - visibleMargin);
-      final clampedY = targetY.clamp(visibleMargin, 640.0 - visibleMargin);
-
       cam.viewfinder.position = Vector2(
         cam.viewfinder.position.x +
-            (clampedX - cam.viewfinder.position.x) * 0.15,
+            (targetX - cam.viewfinder.position.x) * 0.15,
         cam.viewfinder.position.y +
-            (clampedY - cam.viewfinder.position.y) * 0.15,
+            (targetY - cam.viewfinder.position.y) * 0.15,
       );
     }
   }
