@@ -2,8 +2,10 @@ import 'package:flame/components.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/game_providers.dart';
+import 'components/map_item_component.dart';
 import 'components/npc_component.dart';
 import 'components/player_component.dart';
+import 'components/spark_effect.dart';
 import 'components/tile_map_component.dart';
 
 class QuestWorld extends World {
@@ -12,6 +14,7 @@ class QuestWorld extends World {
   late TileMapComponent tileMap;
   final Map<String, PlayerComponent> _players = {};
   final Map<String, NpcComponent> _npcs = {};
+  final Map<String, MapItemComponent> _items = {};
 
   QuestWorld(this.ref);
 
@@ -97,7 +100,43 @@ class QuestWorld extends World {
       }
     }
 
-    // 4. Camera Follow Logic
+    // 4. Sync Items
+    final serverItems = snapshot.items.keys.toSet();
+    final localItems = _items.keys.toSet();
+
+    // Remove collected items and spawn sparks
+    final itemsToRemove = localItems.difference(serverItems);
+    for (final id in itemsToRemove) {
+      final comp = _items.remove(id);
+      if (comp != null) {
+        // Spawn SparkEffect before removing
+        final spark = SparkEffect(
+          position: comp.position.clone(),
+          color: comp.getColor(),
+        );
+        tileMap.add(spark);
+
+        comp.removeFromParent();
+      }
+    }
+
+    // Add new items
+    for (final id in serverItems) {
+      if (!_items.containsKey(id)) {
+        final itemData = snapshot.items[id]!;
+        final newItem = MapItemComponent(
+          itemId: itemData.itemId,
+          itemType: itemData.itemType,
+          tileX: itemData.x,
+          tileY: itemData.y,
+        );
+
+        _items[id] = newItem;
+        tileMap.add(newItem);
+      }
+    }
+
+    // 5. Camera Follow Logic
     final myPlayerComp = _players[teamName];
     if (myPlayerComp != null) {
       final cam = findGame()!.camera;
