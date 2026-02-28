@@ -11,7 +11,7 @@ class DPadControls extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         // Up
-        _DirButton(icon: Icons.keyboard_arrow_up, onTap: () => onMove('up')),
+        _DirButton(icon: Icons.keyboard_arrow_up, onTap: () => onMove('north')),
         const SizedBox(height: 8),
         Row(
           mainAxisSize: MainAxisSize.min,
@@ -19,7 +19,7 @@ class DPadControls extends StatelessWidget {
             // Left
             _DirButton(
               icon: Icons.keyboard_arrow_left,
-              onTap: () => onMove('left'),
+              onTap: () => onMove('west'),
             ),
             const SizedBox(width: 8),
             // Center indicator
@@ -35,7 +35,7 @@ class DPadControls extends StatelessWidget {
             // Right
             _DirButton(
               icon: Icons.keyboard_arrow_right,
-              onTap: () => onMove('right'),
+              onTap: () => onMove('east'),
             ),
           ],
         ),
@@ -43,7 +43,7 @@ class DPadControls extends StatelessWidget {
         // Down
         _DirButton(
           icon: Icons.keyboard_arrow_down,
-          onTap: () => onMove('down'),
+          onTap: () => onMove('south'),
         ),
       ],
     );

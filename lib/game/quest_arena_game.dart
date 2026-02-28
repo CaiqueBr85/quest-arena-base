@@ -37,22 +37,22 @@ class QuestArenaGame extends FlameGame<QuestWorld> with KeyboardEvents {
       // Movement
       if (keysPressed.contains(LogicalKeyboardKey.arrowUp) ||
           keysPressed.contains(LogicalKeyboardKey.keyW)) {
-        ws.move('up');
+        ws.move('north');
         return KeyEventResult.handled;
       }
       if (keysPressed.contains(LogicalKeyboardKey.arrowDown) ||
           keysPressed.contains(LogicalKeyboardKey.keyS)) {
-        ws.move('down');
+        ws.move('south');
         return KeyEventResult.handled;
       }
       if (keysPressed.contains(LogicalKeyboardKey.arrowLeft) ||
           keysPressed.contains(LogicalKeyboardKey.keyA)) {
-        ws.move('left');
+        ws.move('west');
         return KeyEventResult.handled;
       }
       if (keysPressed.contains(LogicalKeyboardKey.arrowRight) ||
           keysPressed.contains(LogicalKeyboardKey.keyD)) {
-        ws.move('right');
+        ws.move('east');
         return KeyEventResult.handled;
       }
 
