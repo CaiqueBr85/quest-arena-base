@@ -14,8 +14,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quest_arena_client/providers/game_providers.dart';
 import 'package:quest_arena_client/game/quest_arena_game.dart';
 import '../ui/top_bar_overlay.dart';
+import '../ui/dpad_overlay.dart';
 
-// import 'overlays/dpad_overlay.dart';
 // import 'overlays/side_panel_overlay.dart';
 // import 'overlays/npc_dialogue_overlay.dart';
 // import 'overlays/item_toast_overlay.dart';
@@ -101,12 +101,13 @@ class _QuestArenaWidgetState extends ConsumerState<QuestArenaWidget> {
             child: SafeArea(child: TopBarOverlay()),
           ),
 
-          /*
           const Positioned(
             bottom: 32,
             left: 32,
             child: SafeArea(child: DPadOverlay()),
           ),
+
+          /*
 
           const Positioned(
             top: 80,
