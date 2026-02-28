@@ -7,158 +7,131 @@
 /// See README.md for step-by-step tasks.
 library;
 
+import 'dart:async';
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quest_arena_client/providers/game_providers.dart';
+import 'package:quest_arena_client/game/quest_arena_game.dart';
+// import 'overlays/top_bar_overlay.dart';
+// import 'overlays/dpad_overlay.dart';
+// import 'overlays/side_panel_overlay.dart';
+// import 'overlays/npc_dialogue_overlay.dart';
+// import 'overlays/item_toast_overlay.dart';
 
-class QuestArenaWidget extends ConsumerWidget {
+class QuestArenaWidget extends ConsumerStatefulWidget {
   const QuestArenaWidget({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<QuestArenaWidget> createState() => _QuestArenaWidgetState();
+}
+
+class _QuestArenaWidgetState extends ConsumerState<QuestArenaWidget> {
+  late QuestArenaGame _game;
+  Timer? _itemEffectTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _game = QuestArenaGame(ref);
+  }
+
+  @override
+  void dispose() {
+    _itemEffectTimer?.cancel();
+    super.dispose();
+  }
+
+  void _scheduleItemEffectDismissal() {
+    _itemEffectTimer?.cancel();
+    _itemEffectTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted) {
+        ref.read(itemEffectProvider.notifier).clear();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final snapshot = ref.watch(gameSnapshotProvider);
-    final chatMessages = ref.watch(chatMessagesProvider);
-    final teamName = ref.watch(teamNameProvider);
+    // ignore: unused_local_variable
+    final npcDialogue = ref.watch(npcDialogueProvider);
+    // ignore: unused_local_variable
+    final itemEffect = ref.watch(itemEffectProvider);
+
+    // Auto-dismiss item effect
+    ref.listen<Object?>(itemEffectProvider, (previous, next) {
+      if (next != null) {
+        _scheduleItemEffectDismissal();
+      }
+    });
 
     if (snapshot == null) {
       return Scaffold(
+        backgroundColor: const Color(0xFF0A0A1A),
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: [
-              const CircularProgressIndicator(color: Color(0xFF53CFFF)),
-              const SizedBox(height: 16),
-              const Text(
+            children: const [
+              CircularProgressIndicator(color: Color(0xFF53CFFF)),
+              SizedBox(height: 16),
+              Text(
                 'Waiting for game state...',
                 style: TextStyle(color: Colors.white54),
               ),
-              if (chatMessages.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Text(
-                  chatMessages.last,
-                  style: const TextStyle(
-                    color: Color(0xFF00FF88),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
             ],
           ),
         ),
       );
     }
 
-    // ---------------------------------------------------------------
-    // PLACEHOLDER: Replace this entire Scaffold with your Flame game!
-    // ---------------------------------------------------------------
-    final myPlayer = snapshot.players[teamName];
-
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Status header
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF16213E),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Team: $teamName',
-                    style: const TextStyle(
-                      color: Color(0xFF00FF88),
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Map: ${snapshot.map.length}x${snapshot.map[0].length}  |  '
-                    'Players: ${snapshot.players.length}  |  '
-                    'Score: ${myPlayer?.score ?? 0}  |  '
-                    'Round: ${snapshot.round}  |  '
-                    '${snapshot.gameActive ? "${snapshot.timeRemaining}s left" : "Lobby"}',
-                    style: const TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                  if (myPlayer != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      'Position: (${myPlayer.x}, ${myPlayer.y})  |  '
-                      'Inventory: ${myPlayer.inventory.length} items  |  '
-                      'NPCs: ${snapshot.npcs.length}',
-                      style: const TextStyle(
-                        color: Colors.white54,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
+      backgroundColor: const Color(0xFF0A0A1A),
+      body: Stack(
+        children: [
+          // 1. Core Flame Game Layer (Takes up the whole screen space initially)
+          Positioned.fill(child: GameWidget<QuestArenaGame>(game: _game)),
 
-            const SizedBox(height: 16),
-            const Text(
-              'Server messages are flowing! Now build the game.',
-              style: TextStyle(
-                color: Color(0xFFE94560),
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'See README.md for tasks. Start with Task 1: Tile Map Component.',
-              style: TextStyle(color: Colors.white38, fontSize: 12),
-            ),
+          // 2. Overlays Layer (Commented out until Tasks 8-12 are done)
 
-            const SizedBox(height: 16),
+          /*
+          const Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(child: TopBarOverlay()),
+          ),
 
-            // Chat log
-            const Text(
-              'LOG',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
+          const Positioned(
+            bottom: 32,
+            left: 32,
+            child: SafeArea(child: DPadOverlay()),
+          ),
+
+          const Positioned(
+            top: 80,
+            right: 16,
+            bottom: 16,
+            child: SafeArea(child: SidePanelOverlay()),
+          ),
+          */
+
+          // 3. Conditional Overlays
+          /*
+          if (npcDialogue != null)
+            Positioned.fill(
+              child: NpcDialogueOverlay(dialogue: npcDialogue),
             ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF16213E),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: ListView.builder(
-                  reverse: true,
-                  itemCount: chatMessages.length,
-                  itemBuilder: (_, i) {
-                    final msg = chatMessages[chatMessages.length - 1 - i];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Text(
-                        msg,
-                        style: const TextStyle(
-                          color: Colors.white54,
-                          fontSize: 12,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+            
+          if (itemEffect != null)
+            Positioned(
+              bottom: 120,
+              left: 0,
+              right: 0,
+              child: Center(child: ItemToastOverlay(effect: itemEffect)),
             ),
-          ],
-        ),
+          */
+        ],
       ),
     );
   }
