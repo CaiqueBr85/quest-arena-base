@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 
 class TileMapComponent extends PositionComponent {
   static const double tileSize = 32.0;
-  
+
   List<List<String>> _map = [];
   double _elapsedTime = 0.0;
 
   TileMapComponent() {
     size = Vector2(20 * tileSize, 20 * tileSize);
+    anchor = Anchor
+        .center; // Makes the Flame coordinate (0,0) be the center of the map.
   }
 
   void updateMap(List<List<String>> newMap) {
@@ -30,7 +32,7 @@ class TileMapComponent extends PositionComponent {
 
     final Paint emptyPaint = Paint()..color = const Color(0xFF1A1A2E);
     final Paint wallPaint = Paint()..color = const Color(0xFF16213E);
-    
+
     // Grid lines
     final Paint gridPaint = Paint()
       ..color = const Color(0xFF0F3460).withOpacity(0.3)
@@ -41,8 +43,8 @@ class TileMapComponent extends PositionComponent {
       for (int col = 0; col < _map[row].length; col++) {
         final String tileType = _map[row][col];
         final Rect rect = Rect.fromLTWH(
-          col * tileSize,
-          row * tileSize,
+          (col * tileSize) - (size.x / 2),
+          (row * tileSize) - (size.y / 2),
           tileSize,
           tileSize,
         );
@@ -72,22 +74,23 @@ class TileMapComponent extends PositionComponent {
   void _drawGem(Canvas canvas, Rect rect) {
     final center = rect.center;
     final double radius = tileSize * 0.3;
-    
+
     canvas.save();
     canvas.translate(center.dx, center.dy);
     // Rotate animation using elapsed time
     canvas.rotate(_elapsedTime * 2.0);
-    
+
     final Path diamondPath = Path()
       ..moveTo(0, -radius)
       ..lineTo(radius, 0)
       ..lineTo(0, radius)
       ..lineTo(-radius, 0)
       ..close();
-      
-    final Paint gemPaint = Paint()..color = const Color(0xFF00FFFF); // bright cyan
+
+    final Paint gemPaint = Paint()
+      ..color = const Color(0xFF00FFFF); // bright cyan
     canvas.drawPath(diamondPath, gemPaint);
-    
+
     canvas.restore();
   }
 
@@ -105,7 +108,7 @@ class TileMapComponent extends PositionComponent {
     // Draw keyhole shape
     final center = rect.center;
     canvas.drawCircle(Offset(center.dx, center.dy - 2), 3.0, keyholePaint);
-    
+
     final Path trapPath = Path()
       ..moveTo(center.dx - 3, center.dy + 5)
       ..lineTo(center.dx + 3, center.dy + 5)
@@ -119,10 +122,10 @@ class TileMapComponent extends PositionComponent {
     // Pulsing glow animation
     final double pulse = (sin(_elapsedTime * 3) + 1) / 2; // 0.0 to 1.0
     final double opacity = 0.4 + (0.6 * pulse); // 0.4 to 1.0
-    
+
     final Paint doorPaint = Paint()
       ..color = const Color(0xFF00FF88).withOpacity(opacity);
-      
+
     final RRect rrect = RRect.fromRectAndRadius(
       rect.deflate(4.0),
       const Radius.circular(4.0),
