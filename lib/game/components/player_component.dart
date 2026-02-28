@@ -46,12 +46,7 @@ class PlayerComponent extends PositionComponent {
   }
 
   Vector2 _getTilePosition(int tileX, int tileY) {
-    // 320 is half of the map size (20 tiles * 32px / 2). We subtract this to account
-    // for the TileMapComponent being anchored at Anchor.center instead of TopLeft.
-    return Vector2(
-      (tileX * tileSize + 16) - 320,
-      (tileY * tileSize + 16) - 320,
-    );
+    return Vector2(tileX * tileSize + 16, tileY * tileSize + 16);
   }
 
   @override

@@ -10,8 +10,6 @@ class TileMapComponent extends PositionComponent {
 
   TileMapComponent() {
     size = Vector2(20 * tileSize, 20 * tileSize);
-    anchor = Anchor
-        .center; // Makes the Flame coordinate (0,0) be the center of the map.
   }
 
   void updateMap(List<List<String>> newMap) {
@@ -43,8 +41,8 @@ class TileMapComponent extends PositionComponent {
       for (int col = 0; col < _map[row].length; col++) {
         final String tileType = _map[row][col];
         final Rect rect = Rect.fromLTWH(
-          (col * tileSize) - (size.x / 2),
-          (row * tileSize) - (size.y / 2),
+          col * tileSize,
+          row * tileSize,
           tileSize,
           tileSize,
         );
