@@ -23,7 +23,12 @@ class QuestArenaGame extends FlameGame<QuestWorld> with KeyboardEvents {
     await super.onLoad();
 
     // Setup camera viewfinder
-    camera.viewfinder.anchor = Anchor.center;
+    // Instead of forcing Anchor.center, we provide an Initial Position that
+    // aligns the top-left of the 640x640 map inward to the screen.
+    camera.viewfinder.anchor = Anchor.topLeft;
+
+    // Zoom slightly to fit more gracefully
+    camera.viewfinder.zoom = 1.0;
   }
 
   @override
